@@ -7,6 +7,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+mkdir -p $LOGS_FOLDER
 
 Start_time=$(date +%s)
 echo "$(date "+%Y-%m-%d %H:%M:%S") | Script started executing at: $(date)" | tee -a $LOGS_FILE
@@ -18,7 +19,6 @@ if [ $USERID -ne 0 ]; then
 fi
 }
 
-mkdir -p $LOGS_FOLDER
 
 validate(){
   if [ $1 -ne 0 ]; then
