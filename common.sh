@@ -33,11 +33,7 @@ validate(){
   fi
 }
 
-total_time(){
-  end_time=$(date +%s)
-  total_time=$(($end_time-$Start_time))
-  echo "total time to run the script is $total_time seconds"
-}
+
 
 nodejs_setup(){
   dnf module disable nodejs -y &>>$LOGS_FILE
@@ -116,4 +112,11 @@ systemd_setup(){
 app_restart(){
   systemctl restart $app_name
   validate $? "$app_name restart"
+}
+
+
+total_time(){
+  end_time=$(date +%s)
+  total_time=$(($end_time-$Start_time))
+  echo "total time to run the script is $total_time seconds"
 }
