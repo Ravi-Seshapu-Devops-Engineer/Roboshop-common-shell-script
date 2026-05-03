@@ -14,7 +14,7 @@ dnf install $app_name -y &>>$LOGS_FILE
 validate $? "$app_name installation"
 
 sed -i -e 's/127.0.0.1/0.0.0.0/g' -e '/protected-mode/ c protected-mode no' /etc/redis/redis.conf
-VALIDATE $? "Allowing remote connections"
+validate $? "Allowing remote connections"
 
 systemctl enable redis &>>$LOGS_FILE
 systemctl start redis &>>$LOGS_FILE
