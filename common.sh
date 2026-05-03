@@ -7,7 +7,10 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.seshapudevops.online
 mkdir -p $LOGS_FOLDER
+
 
 Start_time=$(date +%s)
 echo "$(date "+%Y-%m-%d %H:%M:%S") | Script started executing at: $(date)" | tee -a $LOGS_FILE
@@ -35,4 +38,60 @@ total_time(){
   echo "total time to run the script is $total_time seconds"
 }
 
+nodejs_setup(){
+  dnf module disable nodejs -y &>>$LOGS_FILE
+  validate $? "disabling existing nodejs" 
 
+  dnf module enable nodejs:20 -y &>>$LOGS_FILE
+  validate $? "enabling nodejs 20 version" 
+
+  dnf install nodejs -y &>>$LOGS_FILE
+  validate $? "installing nodejs"
+
+  npm install &>>$LOGS_FILE
+  validate $? "installing node package manager"
+}
+
+app_setup(){
+  id roboshop &>>$LOGS_FILE
+  if [ $? -ne 0 ]; then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
+    validate $? "user creation"
+  else
+    echo -e "roboshop user aready exists $Y skipping $N"
+  fi
+
+  mkdir -p /app &>>$LOGS_FILE
+  validate $? "app directory creation"
+
+  curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
+  validate $? "Downloading the code"
+
+  cd /app &>>$LOGS_FILE
+  validate $? "directory changed to app"
+
+  rm -rf /app/* &>>$LOGS_FILE
+  validate $? "Removing the existing code"
+
+  unzip /tmp/$app_name.zip &>>$LOGS_FILE
+  validate $? "Unzipping the code"
+}
+
+systemd_setup(){
+  cp $SCRIPT_DIR/$app_name.service /etc/systemd/system//$app_name.service &>>$LOGS_FILE
+  validate $? "creating systemctl service"
+
+  systemctl daemon-reload &>>$LOGS_FILE
+  validate $? "deamon reload"
+
+  systemctl enable /$app_name &>>$LOGS_FILE
+  validate $? "enabling /$app_name"
+
+  systemctl start /$app_name &>>$LOGS_FILE
+  validate $? "/$app_name started"
+}
+
+app_restart(){
+  systemctl restart $app_name
+  validate $? "$app_name restart"
+}
