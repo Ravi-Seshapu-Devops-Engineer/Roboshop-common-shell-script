@@ -84,11 +84,11 @@ systemd_setup(){
   systemctl daemon-reload &>>$LOGS_FILE
   validate $? "deamon reload"
 
-  systemctl enable /$app_name &>>$LOGS_FILE
+  systemctl enable $app_name &>>$LOGS_FILE
   validate $? "enabling /$app_name"
 
-  systemctl start /$app_name &>>$LOGS_FILE
-  validate $? "/$app_name started"
+  systemctl start $app_name &>>$LOGS_FILE
+  validate $? "$app_name started"
 }
 
 app_restart(){
