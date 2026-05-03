@@ -9,6 +9,7 @@ Y="\e[33m"
 N="\e[0m"
 SCRIPT_DIR=$PWD
 MONGODB_HOST=mongodb.seshapudevops.online
+MYSQL_HOST=mysql.seshapudevops.online
 mkdir -p $LOGS_FOLDER
 
 
@@ -50,6 +51,18 @@ nodejs_setup(){
 
   npm install &>>$LOGS_FILE
   validate $? "installing node package manager"
+}
+
+java_setup(){
+  dnf install maven -y &>>$LOGS_FILE
+  validate $? "Installation of maven"
+
+  cd /app 
+  mvn clean package &>>$LOGS_FILE
+  validate $? "Installing and building $app_name"
+
+  mv target/$app_name-1.0.jar $app_name.jar
+  validate $? "moving the jar file to $app_name.jar"
 }
 
 app_setup(){
